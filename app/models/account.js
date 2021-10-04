@@ -1,7 +1,7 @@
 const DatabaseConnection = require('../config/connection');
 
 module.exports = {
-    getAccountUser: async function (condition, value) {
+    getAccount: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
             var [rowsAccount, ] = await connection.execute(`SELECT * FROM user WHERE ${condition} = ?`, [value]);
