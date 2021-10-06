@@ -2,8 +2,12 @@ const errorCode = {
     'DB01': 'database error',
     'REG01': 'please complete registration form',
     'REG02': 'username already registered',
+    'AUTH01': 'unregistered username',
     'AUTH02': 'username or password is not correct',
     'AUTH03': 'cannot verify email or password',
+    'PRSN01': 'please complete customer registration form',
+    'PRSN02': 'please complete vendor registration form',
+    'ITEM01': 'product not found'
 };
 module.exports = {
     error: function (error, req, res, next) {
