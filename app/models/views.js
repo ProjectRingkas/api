@@ -4,7 +4,7 @@ module.exports = {
     getProduct: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_products WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsProduct
@@ -21,7 +21,7 @@ module.exports = {
     getAllProducts: async function () {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_products`);
             return {
                 success: true,
                 response: rowsProduct
@@ -35,12 +35,13 @@ module.exports = {
             }
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
+    getOrder: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            var [rowsOrder, ] = await connection.execute(`SELECT * FROM view_detail_orders WHERE ${condition} = ?`, [value]);
             return {
-                success: true
+                success: true,
+                response: rowsOrder
             };
         } catch (ex) {
             connection.rollback();
@@ -48,7 +49,24 @@ module.exports = {
             return {
                 success: false,
                 response: ex
+            }
+        }
+    },
+    getAllOrders: async function (condition, value) {
+        var connection = await DatabaseConnection.get();
+        try {
+            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_orders`);
+            return {
+                success: true,
+                response: rowsOrder
             };
+        } catch (ex) {
+            connection.rollback();
+            console.info('Rollback successful');
+            return {
+                success: false,
+                response: ex
+            }
         }
     },
 };

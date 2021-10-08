@@ -1,13 +1,13 @@
 const DatabaseConnection = require('../config/connection');
 
 module.exports = {
-    getProduct: async function (condition, value) {
+    getUserDetail: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsUser, ] = await connection.execute(`SELECT * FROM detail_user WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsUser
             };
         } catch (ex) {
             connection.rollback();
@@ -18,13 +18,12 @@ module.exports = {
             }
         }
     },
-    getAllProducts: async function () {
+    setUserDetail: async function (user_id, name, address) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            await connection.execute('INSERT INTO detail_user (user_id, name, address) VALUES (?, ?)', [user_id, name, address]);
             return {
-                success: true,
-                response: rowsProduct
+                success: true
             };
         } catch (ex) {
             connection.rollback();
@@ -32,13 +31,13 @@ module.exports = {
             return {
                 success: false,
                 response: ex
-            }
+            };
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
+    updateUserDetail: async function (user_id, name, address) {
         var connection = await DatabaseConnection.get();
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            await connection.execute('UPDATE detail_user SET name = ?, address = ? WHERE user_id = ?', [name, address, user_id]);
             return {
                 success: true
             };

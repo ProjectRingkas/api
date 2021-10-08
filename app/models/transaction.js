@@ -1,13 +1,13 @@
 const DatabaseConnection = require('../config/connection');
 
 module.exports = {
-    getProduct: async function (condition, value) {
+    getTransaction: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsTransc, ] = await connection.execute(`SELECT * FROM transaction WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsTransc
             };
         } catch (ex) {
             connection.rollback();
@@ -18,13 +18,13 @@ module.exports = {
             }
         }
     },
-    getAllProducts: async function () {
+    getAllTransactions: async function () {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            var [rowsTransc, ] = await connection.execute('SELECT * FROM transaction');
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsTransc
             };
         } catch (ex) {
             connection.rollback();
@@ -35,10 +35,10 @@ module.exports = {
             }
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
+    setTransaction: async function (date, total_payment, coa_credit_id, coa_debit_id, transaction_price_credit, transaction_price_debit, description) {
         var connection = await DatabaseConnection.get();
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            await connection.execute('INSERT INTO transaction (date, total_payment, coa_credit_id, coa_debit_id, transaction_price_credit, transaction_price_debit, status, description) VALUES (?, ?, ?, ?, ?, ?, ?)', [date, total_payment, coa_credit_id, coa_debit_id, transaction_price_credit, transaction_price_debit, description]);
             return {
                 success: true
             };

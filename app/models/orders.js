@@ -1,13 +1,13 @@
 const DatabaseConnection = require('../config/connection');
 
 module.exports = {
-    getProduct: async function (condition, value) {
+    getOrder: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsOrder, ] = await connection.execute(`SELECT * FROM orders WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsOrder
             };
         } catch (ex) {
             connection.rollback();
@@ -18,13 +18,13 @@ module.exports = {
             }
         }
     },
-    getAllProducts: async function () {
+    getAllOrders: async function () {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            var [rowsOrder, ] = await connection.execute(`SELECT * FROM orders`);
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsOrder
             };
         } catch (ex) {
             connection.rollback();
@@ -35,10 +35,10 @@ module.exports = {
             }
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
+    setOrder: async function (customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id) {
         var connection = await DatabaseConnection.get();
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            await connection.execute('INSERT INTO orders (customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id]);
             return {
                 success: true
             };

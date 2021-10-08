@@ -1,6 +1,6 @@
 const DBConnection = require('../config/connection');
 const Response = require('../middleware/res');
-const ProductModel = require('../models/products')
+const ViewsModel = require('../models/views')
 
 module.exports = {
     getProduct: async function (request, response, next) {
@@ -21,7 +21,7 @@ module.exports = {
                 if (!checkConnection) throw new Error(`DB01`);
     
                 // Get product
-                var queryProduct = await ProductModel.getProduct('id', product_id);
+                var queryProduct = await ViewsModel.getProduct('id', product_id);
                 if (!queryProduct.success) throw queryProduct.response;
                 var rowsProduct = queryProduct.response;
                 
@@ -45,7 +45,7 @@ module.exports = {
             if (!checkConnection) throw new Error(`DB01`);
 
             // Insert account
-            var queryProduct = await ProductModel.getAllProducts();
+            var queryProduct = await ViewsModel.getAllProducts();
             if (!queryProduct.success) throw queryProduct.response;
             var rowsProducts = queryProduct.response;
             

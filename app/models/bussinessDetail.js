@@ -1,13 +1,13 @@
 const DatabaseConnection = require('../config/connection');
 
 module.exports = {
-    getProduct: async function (condition, value) {
+    getBussinessDetail: async function (condition, value) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsUser, ] = await connection.execute(`SELECT * FROM bussiness_detail WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
-                response: rowsProduct
+                response: rowsUser
             };
         } catch (ex) {
             connection.rollback();
@@ -18,13 +18,12 @@ module.exports = {
             }
         }
     },
-    getAllProducts: async function () {
+    setBussinessDetail: async function (user_id, name, address, description) {
         var connection = await DatabaseConnection.get();
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            await connection.execute('INSERT INTO bussiness_detail (user_id, name, address, description) VALUES (?, ?, ?, ?)', [user_id, name, address, description]);
             return {
-                success: true,
-                response: rowsProduct
+                success: true
             };
         } catch (ex) {
             connection.rollback();
@@ -32,13 +31,13 @@ module.exports = {
             return {
                 success: false,
                 response: ex
-            }
+            };
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
+    updateBussinessDetail: async function (user_id, name, address, description) {
         var connection = await DatabaseConnection.get();
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            await connection.execute('UPDATE bussiness_detail SET name = ?, address = ?, description = ? WHERE user_id = ?', [name, address, description, user_id]);
             return {
                 success: true
             };

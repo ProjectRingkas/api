@@ -3,7 +3,7 @@ const cors = require('cors');
 
 const DatabaseConnection = require('./app/config/connection');
 const ErrorHandle = require('./app/middleware/error');
-const routes = require('./routes');
+const Routes = require('./routes');
 
 const router = express.Router();
 const app = express();
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use('/api', router);
 app.use(ErrorHandle.error);
-routes(router);
+Routes(router);
 
 app.use('/', (req, res) => {
     res.status(404);
