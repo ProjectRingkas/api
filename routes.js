@@ -23,11 +23,13 @@ module.exports = function (router) {
     router.get('/items/get', Item.getProduct);
     router.get('/items/getall', Item.getAllProducts);
     router.post('/items/add', Item.addProduct);
+    router.put('/items/inventory/update', Item.updateStock);
     router.get('/items/categories/getall', Item.getAllCategories);
 
     // sale transaction
     router.get('/invoice/get', Invoice.getOrder);
     router.get('/invoice/getall', Invoice.getAllOrders);
+    router.post('/invoice/add', Invoice.addOrder);
 
     // bill transaction
 

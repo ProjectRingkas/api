@@ -2,7 +2,8 @@ const PoolConnection = require('../config/pool');
 const Response = require('../middleware/res');
 const ViewsModel = require('../models/views')
 const ProductModel = require('../models/products')
-const categoryModel = require('../models/category')
+const CategoryModel = require('../models/category')
+const InventoryModel = require('../models/inventory')
 
 module.exports = {
     getProduct: async function (request, response, next) {
@@ -57,7 +58,7 @@ module.exports = {
             var connection = await PoolConnection.get();
 
             // Get all categories
-            var queryCategory = await categoryModel.getAllCategories(connection);
+            var queryCategory = await CategoryModel.getAllCategories(connection);
             if (!queryCategory.success) throw queryCategory.response;
             var rowsCategory = queryCategory.response;
 
@@ -71,28 +72,80 @@ module.exports = {
         const {
             category_id,
             name,
-            type,
-            description,
+            product_type,
+            product_description,
             supplier,
-            price
+            price,
+            stock,
+            limit_stock,
+            inventory_type,
+            inventory_description
         } = request.body;
 
-        if (category_id && name && price) {
+        if (category_id && name && price && stock && limit_stock) {
+            try {
+                // Get pool connection
+                var connection = await PoolConnection.getConnection();
+                await connection.beginTransaction();
+
+                // Add product
+                var queryProduct = await ProductModel.setProduct(connection, category_id, name, product_type, product_description, supplier, price);
+                if (!queryProduct.success) throw queryProduct.response;
+                var rowsProduct = queryProduct.response;
+
+                // Set inventoey
+                var queryInventory = await InventoryModel.setInventory(connection, rowsProduct[0].product_id, stock, limit_stock, inventory_type, inventory_description);
+                if (!queryInventory.success) throw queryInventory.response;
+
+                await connection.commit();
+                await connection.release();
+
+                data = { 
+                    'product_id': rowsProduct[0].product_id,
+                    'name': name
+                }
+                Response.ok("add product success", data, response);
+            } catch (ex) {
+                //console.log(ex)
+                await connection.rollback();
+                await connection.release();
+                console.log("rollback success")
+                next(ex);
+            }
+        } else {
+            next(new Error('ITEM02'));
+        }
+    },
+    updateStock: async function (request, response, next) {
+        const {
+            product_id,
+            stock,
+            type,
+            description,
+        } = request.body;
+
+        if (product_id && stock) {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.get();
 
-                // Add product
-                var queryProduct = await ProductModel.setProduct(connection, category_id, name, type, description, supplier, price);
-                if (!queryProduct.success) throw queryProduct.response;
+                // Update inventory
+                var queryInventory = await InventoryModel.updateInventory(connection, product_id, stock, type, description);
+                if (!queryInventory.success) throw queryInventory.response;
 
-                Response.ok("add product success", data, response);
+                data = { 
+                    'product_id': product_id,
+                    'stock': stock,
+                    'type': type,
+                    'description': description
+                }
+                Response.ok("update inventory success", data, response);
             } catch (ex) {
                 //console.log(ex)
                 next(ex);
             }
         } else {
-            next(new Error('ITEM02'));
+            next(new Error('ITEM03'));
         }
     },
 };

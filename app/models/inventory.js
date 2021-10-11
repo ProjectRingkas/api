@@ -1,5 +1,5 @@
 module.exports = {
-    getInventoryt: async function (connection, condition, value) {
+    getInventory: async function (connection, condition, value) {
         try {
             var [rowsInventory, ] = await connection.query(`SELECT * FROM inventory WHERE ${condition} = ?`, [value]);
             return {
@@ -40,9 +40,9 @@ module.exports = {
             };
         }
     },
-    updateInventory: async function (connection, product_id, stock) {
+    updateInventory: async function (connection, product_id, stock, type, description) {
         try {
-            await connection.query('UPDATE inventory SET stock = ? WHERE product_id = ?', [stock, product_id]);
+            await connection.query('UPDATE inventory SET stock = ?, type = ?, description = ? WHERE product_id = ?', [stock, type, description, product_id]);
             return {
                 success: true
             };

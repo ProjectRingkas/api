@@ -30,8 +30,10 @@ module.exports = {
     setOrder: async function (connection, customer_id, description, date, status) {
         try {
             await connection.query('INSERT INTO orders (customer_id, description, date, status) VALUES (?, ?, ?, ?)', [customer_id, description, date, status]);
+            var [rowsOrder] = await connection.execute('SELECT LAST_INSERT_ID() as order_id');
             return {
-                success: true
+                success: true,
+                response: rowsOrder
             };
         } catch (ex) {
             return {

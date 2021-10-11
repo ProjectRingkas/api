@@ -30,8 +30,10 @@ module.exports = {
     setProduct: async function (connection, category_id, name, type, description, supplier, price) {
         try {
             await connection.query('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            var [rowsProduct] = await connection.execute('SELECT LAST_INSERT_ID() as product_id');
             return {
                 success: true,
+                response: rowsProduct
             };
         } catch (ex) {
             return {
