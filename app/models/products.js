@@ -1,50 +1,39 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getProduct: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getProduct: async function (connection, condition, value) {
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
+            var [rowsProduct, ] = await connection.query(`SELECT * FROM products WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsProduct
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllProducts: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllProducts: async function (connection) {
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM products`);
+            var [rowsProduct, ] = await connection.query(`SELECT * FROM products`);
             return {
                 success: true,
                 response: rowsProduct
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setProduct: async function (category_id, name, type, description, supplier, price) {
-        var connection = await DatabaseConnection.get();
+    setProduct: async function (connection, category_id, name, type, description, supplier, price) {
         try {
-            await connection.execute('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
+            await connection.query('INSERT INTO products (category_id, name, type, description, supplier, price) VALUES (?, ?, ?, ?, ?, ?)', [category_id, name, type, description, supplier, price]);
             return {
-                success: true
+                success: true,
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

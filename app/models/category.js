@@ -1,50 +1,39 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getCategory: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getCategory: async function (connection, condition, value) {
         try {
-            var [rowsCategory, ] = await connection.execute(`SELECT * FROM category WHERE ${condition} = ?`, [value]);
+            var [rowsCategory, ] = await connection.query(`SELECT * FROM category WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsCategory
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllCategories: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllCategories: async function (connection) {
         try {
-            var [rowsCategory, ] = await connection.execute(`SELECT * FROM category`);
+            var [rowsCategory, ] = await connection.query(`SELECT * FROM category`);
             return {
                 success: true,
                 response: rowsCategory
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setCategory: async function (name, description) {
-        var connection = await DatabaseConnection.get();
+    setCategory: async function (connection, name, description) {
         try {
-            await connection.execute('INSERT INTO category (name, description) VALUES (?, ?)', [name, description]);
+            await connection.query('INSERT INTO category (name, description) VALUES (?, ?)', [name, description]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

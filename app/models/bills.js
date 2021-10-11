@@ -1,50 +1,39 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getBill: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getBill: async function (connection, condition, value) {
         try {
-            var [rowsBill, ] = await connection.execute(`SELECT * FROM bills WHERE ${condition} = ?`, [value]);
+            var [rowsBill, ] = await connection.query(`SELECT * FROM bills WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsBill
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllBills: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllBills: async function (connection) {
         try {
-            var [rowsBill, ] = await connection.execute('SELECT * FROM bills');
+            var [rowsBill, ] = await connection.query('SELECT * FROM bills');
             return {
                 success: true,
                 response: rowsBill
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setBill: async function (vendor_id, product_id, transaction_price, periodic, amount, discount, description, status, date, transaction_id) {
-        var connection = await DatabaseConnection.get();
+    setBill: async function (connection, vendor_id, periodic, type, description, date, status) {
         try {
-            await connection.execute('INSERT INTO bills (vendor_id, product_id, transaction_price, periodic, amount, discount, description, status, date, transaction_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [vendor_id, product_id, transaction_price, periodic, amount, discount, description, status, date, transaction_id]);
+            await connection.query('INSERT INTO bills (vendor_id, periodic, type, description, date, status) VALUES (?, ?, ?, ?, ?, ?)', [vendor_id, periodic, type, description, date, status]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

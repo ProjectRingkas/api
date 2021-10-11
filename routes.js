@@ -3,6 +3,8 @@ module.exports = function (router) {
     const Auth = require('./app/controller/authentication');
     const Person = require('./app/controller/person');
     const Item = require('./app/controller/item');
+    const Invoice = require('./app/controller/invoice'); 
+    const Report = require('./app/controller/report'); 
 
     // index
     router.get('/', Index.index);
@@ -20,7 +22,15 @@ module.exports = function (router) {
     // items
     router.get('/items/get', Item.getProduct);
     router.get('/items/getall', Item.getAllProducts);
+    router.post('/items/add', Item.addProduct);
+    router.get('/items/categories/getall', Item.getAllCategories);
 
     // sale transaction
+    router.get('/invoice/get', Invoice.getOrder);
+    router.get('/invoice/getall', Invoice.getAllOrders);
+
     // bill transaction
+
+    // report
+    router.get('/report/products/getall', Report.getAllProductsReport);
 }

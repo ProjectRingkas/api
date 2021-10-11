@@ -1,50 +1,39 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getCustomer: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getCustomer: async function (connection, condition, value) {
         try {
-            var [rowsCustomer, ] = await connection.execute(`SELECT * FROM customers WHERE ${condition} = ?`, [value]);
+            var [rowsCustomer, ] = await connection.query(`SELECT * FROM customers WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsCustomer
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllCustomers: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllCustomers: async function (connection) {
         try {
-            var [rowsCustomer, ] = await connection.execute(`SELECT * FROM customers`);
+            var [rowsCustomer, ] = await connection.query(`SELECT * FROM customers`);
             return {
                 success: true,
                 response: rowsCustomer
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setCustomer: async function (name, address, phone, description) {
-        var connection = await DatabaseConnection.get();
+    setCustomer: async function (connection, name, address, phone, description) {
         try {
-            await connection.execute('INSERT INTO customers (name, address, phone, description) VALUES (?, ?, ?, ?)', [name, address, phone, description]);
+            await connection.query('INSERT INTO customers (name, address, phone, description) VALUES (?, ?, ?, ?)', [name, address, phone, description]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

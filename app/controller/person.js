@@ -1,4 +1,4 @@
-const DBConnection = require('../config/connection');
+const PoolConnection = require('../config/pool');
 const Response = require('../middleware/res');
 const CustomersModel = require('../models/customers')
 const VenorsModel = require('../models/vendors')
@@ -6,18 +6,13 @@ const VenorsModel = require('../models/vendors')
 module.exports = {
     getAllCustomers: async function (request, response, next) {
         try {
-            // Check connection
-            var checkConnection = await DBConnection.start();
-            if (!checkConnection) throw new Error(`DB01`);
+            // Get pool connection
+            var connection = await PoolConnection.get();
 
             // Get all customers
-            var queryCustomers = await CustomersModel.getAllCustomers();
+            var queryCustomers = await CustomersModel.getAllCustomers(connection);
             if (!queryCustomers.success) throw queryCustomers.response;
             var rowsCustomers = queryCustomers.response;
-            
-            // Commit
-            checkConnection = await DBConnection.commit();
-            if (!checkConnection) throw new Error(`DB01`);   
 
             Response.ok("get all customer success", rowsCustomers, response);
         } catch (ex) {
@@ -27,18 +22,13 @@ module.exports = {
     },
     getAllVendors: async function (request, response, next) {
         try {
-            // Check connection
-            var checkConnection = await DBConnection.start();
-            if (!checkConnection) throw new Error(`DB01`);
+            // Get pool connection
+            var connection = await PoolConnection.get();
 
             // Get all vendors
-            var queryVendors = await VenorsModel.getAllVendors();
+            var queryVendors = await VenorsModel.getAllVendors(connection);
             if (!queryVendors.success) throw queryVendors.response;
-            var rowsVendors = queryVendors.response;
-            
-            // Commit
-            checkConnection = await DBConnection.commit();
-            if (!checkConnection) throw new Error(`DB01`);   
+            var rowsVendors = queryVendors.response; 
 
             Response.ok("get all vendors success", rowsVendors, response);
         } catch (ex) {
@@ -56,17 +46,12 @@ module.exports = {
 
         if (name && address && phone) {
             try {
-                // Check connection
-                var checkConnection = await DBConnection.start();
-                if (!checkConnection) throw new Error(`DB01`);
+                // Get pool connection
+                var connection = await PoolConnection.get();
 
                 //  Add customer
-                var queryCustomers = await CustomersModel.setCustomer(name, address, phone, description);
-                if (!queryCustomers.success) throw queryCustomers.response;
-                
-                // Commit
-                checkConnection = await DBConnection.commit();
-                if (!checkConnection) throw new Error(`DB01`);   
+                var queryCustomers = await CustomersModel.setCustomer(connection, name, address, phone, description);
+                if (!queryCustomers.success) throw queryCustomers.response; 
 
                 data = { 
                     'name': name,
@@ -93,17 +78,12 @@ module.exports = {
 
         if (name && address && phone) {
             try {
-                // Check connection
-                var checkConnection = await DBConnection.start();
-                if (!checkConnection) throw new Error(`DB01`);
+                // Get pool connection
+                var connection = await PoolConnection.get();
 
                 // Addvendor
-                var queryVendors = await VenorsModel.setVendor(name, address, phone, description);
+                var queryVendors = await VenorsModel.setVendor(connection, name, address, phone, description);
                 if (!queryVendors.success) throw queryVendors.response;
-                
-                // Commit
-                checkConnection = await DBConnection.commit();
-                if (!checkConnection) throw new Error(`DB01`);   
 
                 data = { 
                     'name': name,
