@@ -9,7 +9,9 @@ const errorCode = {
     'PRSN02': 'please complete vendor registration form',
     'ITEM01': 'product not found',
     'ITEM02': 'please complete product registration form',
-    'INVC01': 'invoice not found'
+    'ITEM03': 'please complete invenory update form',
+    'INVC01': 'invoice not found',
+    'INVC02': 'please complete invoice registration form'
 };
 module.exports = {
     error: function (error, req, res, next) {
