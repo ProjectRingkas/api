@@ -8,6 +8,7 @@ const errorCode = {
     'PRSN01': 'please complete customer registration form',
     'PRSN02': 'please complete vendor registration form',
     'ITEM01': 'product not found',
+    'ITEM02': 'please complete product registration form',
     'INVC01': 'invoice not found'
 };
 module.exports = {

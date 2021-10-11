@@ -1,66 +1,52 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getInventoryt: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getInventoryt: async function (connection, condition, value) {
         try {
-            var [rowsInventory, ] = await connection.execute(`SELECT * FROM inventory WHERE ${condition} = ?`, [value]);
+            var [rowsInventory, ] = await connection.query(`SELECT * FROM inventory WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsInventory
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllInventories: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllInventories: async function (connection) {
         try {
-            var [rowsInventory, ] = await connection.execute(`SELECT * FROM inventory`);
+            var [rowsInventory, ] = await connection.query(`SELECT * FROM inventory`);
             return {
                 success: true,
                 response: rowsInventory
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setInventory: async function (product_id, stock, limit_stock, type, description) {
-        var connection = await DatabaseConnection.get();
+    setInventory: async function (connection, product_id, stock, limit_stock, type, description) {
         try {
-            await connection.execute('INSERT INTO inventory (product_id, stock, limit_stock, type, description) VALUES (?, ?, ?, ?, ?)', [product_id, stock, limit_stock, type, description]);
+            await connection.query('INSERT INTO inventory (product_id, stock, limit_stock, type, description) VALUES (?, ?, ?, ?, ?)', [product_id, stock, limit_stock, type, description]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             };
         }
     },
-    updateInventory: async function (product_id, stock) {
-        var connection = await DatabaseConnection.get();
+    updateInventory: async function (connection, product_id, stock) {
         try {
-            await connection.execute('UPDATE inventory SET stock = ? WHERE product_id = ?', [stock, product_id]);
+            await connection.query('UPDATE inventory SET stock = ? WHERE product_id = ?', [stock, product_id]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

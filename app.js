@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const DatabaseConnection = require('./app/config/connection');
+const pool = require('./app/config/pool');
 const ErrorHandle = require('./app/middleware/error');
 const Routes = require('./routes');
 
@@ -9,7 +9,7 @@ const router = express.Router();
 const app = express();
 const port = 3000
 
-DatabaseConnection.init();
+pool.init();
 
 app.use(cors())
 app.use(express.json());

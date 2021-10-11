@@ -1,50 +1,39 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getOrder: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getOrder: async function (connection, condition, value) {
         try {
-            var [rowsOrder, ] = await connection.execute(`SELECT * FROM orders WHERE ${condition} = ?`, [value]);
+            var [rowsOrder, ] = await connection.query(`SELECT * FROM orders WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsOrder
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllOrders: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllOrders: async function (connection) {
         try {
-            var [rowsOrder, ] = await connection.execute(`SELECT * FROM orders`);
+            var [rowsOrder, ] = await connection.query(`SELECT * FROM orders`);
             return {
                 success: true,
                 response: rowsOrder
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    setOrder: async function (customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id) {
-        var connection = await DatabaseConnection.get();
+    setOrder: async function (connection, customer_id, description, date, status) {
         try {
-            await connection.execute('INSERT INTO orders (customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [customer_id, product_id, transaction_price, amount, discount, description, status, date, transaction_id]);
+            await connection.query('INSERT INTO orders (customer_id, description, date, status) VALUES (?, ?, ?, ?)', [customer_id, description, date, status]);
             return {
                 success: true
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex

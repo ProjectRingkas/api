@@ -1,68 +1,54 @@
-const DatabaseConnection = require('../config/connection');
-
 module.exports = {
-    getProduct: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getProduct: async function (connection, condition, value) {
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_products WHERE ${condition} = ?`, [value]);
+            var [rowsProduct, ] = await connection.query(`SELECT * FROM view_detail_products WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsProduct
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllProducts: async function () {
-        var connection = await DatabaseConnection.get();
+    getAllProducts: async function (connection) {
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_products`);
+            var [rowsProduct, ] = await connection.query(`SELECT * FROM view_detail_products`);
             return {
                 success: true,
                 response: rowsProduct
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getOrder: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getAllProductsReport: async function (connection) {
         try {
-            var [rowsOrder, ] = await connection.execute(`SELECT * FROM view_detail_orders WHERE ${condition} = ?`, [value]);
+            var [rowsProductOrders, ] = await connection.query(`SELECT * FROM view_products_order_report`);
             return {
                 success: true,
-                response: rowsOrder
+                response: rowsProductOrders
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
             }
         }
     },
-    getAllOrders: async function (condition, value) {
-        var connection = await DatabaseConnection.get();
+    getOrderItems: async function (connection, condition, value) {
         try {
-            var [rowsProduct, ] = await connection.execute(`SELECT * FROM view_detail_orders`);
+            var [rowsOrder, ] = await connection.query(`SELECT * FROM view_detail_order_items WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsOrder
             };
         } catch (ex) {
-            connection.rollback();
-            console.info('Rollback successful');
             return {
                 success: false,
                 response: ex
