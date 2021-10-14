@@ -32,6 +32,7 @@ module.exports = {
                 // Get Order
                 var queryOrder = await OrdersModel.getOrder(connection, 'id', order_id);
                 if (!queryOrder.success) throw queryOrder.response;
+                if (queryOrder.response.length <= 0) throw new Error('INVC01');
                 var rowsOrder = queryOrder.response;
 
                 // Get Order Item
@@ -42,13 +43,12 @@ module.exports = {
                 // Merge items to order
                 rowsOrder[0].order_items = rowsOrderItems;
 
-                // If payment complete
-                if (rowsOrder[0].transaction_id)
+                // If there is payment for the order
+                var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order_id);
+                if (!queryTransc.success) throw queryTransc.response;
+                var rowsTransc = queryTransc.response;
+                if (rowsTransc.length > 1)
                 {
-                    var queryTransc = await TransactionModel.getTransaction(connection, 'id', rowsOrder[0].transaction_id);
-                    if (!queryTransc.success) throw queryTransc.response;
-                    var rowsTransc = queryTransc.response;
-
                     // Merge payment to order
                     rowsOrder[0].transaction_detail = rowsTransc;
                 }
@@ -83,13 +83,12 @@ module.exports = {
                 // Merge items to order
                 order.order_items = rowsOrderItems;
 
-                // If payment complete
-                if (order.transaction_id)
+                // If there is payment for the order
+                var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order_id);
+                if (!queryTransc.success) throw queryTransc.response;
+                var rowsTransc = queryTransc.response;
+                if (rowsTransc.length > 1)
                 {
-                    var queryTransc = await TransactionModel.getTransaction(connection, 'id', order.transaction_id);
-                    if (!queryTransc.success) throw queryTransc.response;
-                    var rowsTransc = queryTransc.response;
-
                     // Merge payment to order
                     order.transaction_detail = rowsTransc;
                 }
@@ -108,18 +107,18 @@ module.exports = {
     addOrder: async function (request, response, next) {
         const {
             customer_id,
+            date, 
             items,
             description
         } = request.body;
 
-        if (customer_id && items) {
+        if (customer_id && date && items) {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.getConnection();
                 await connection.beginTransaction();
 
                 // Add Order
-                var date = new Date();
                 var status = "Pending"
                 var queryOrder = await OrdersModel.setOrder(connection, customer_id, description, date, status);
                 if (!queryOrder.success) throw queryOrder.response;
@@ -153,12 +152,19 @@ module.exports = {
                     total_order_price += total_item_price;
                 });
 
+                // round total price to 2 decimal
+                total_order_price = (Math.round(total_order_price * 100) / 100).toFixed(2);
+
+                // Update order total price
+                var queryOrder = await OrdersModel.updateOrder(connection, 'total_price', total_order_price, rowsOrder[0].order_id);
+                if (!queryOrder.success) throw queryOrder.response;
+
                 await connection.commit();
                 await connection.release();
 
                 data = { 
                     'order_id': rowsOrder[0].order_id,
-                    'total_order_price': (Math.round(total_order_price * 100) / 100).toFixed(2)
+                    'total_order_price': total_order_price
                 }
                 Response.ok("add invoice success", data, response);
             } catch (ex) {
@@ -170,54 +176,6 @@ module.exports = {
             }
         } else {
             next(new Error('INVC02'));
-        }
-    },
-    addPayment: async function (request, response, next) {
-        const {
-            category_id,
-            name,
-            product_type,
-            product_description,
-            supplier,
-            price,
-            stock,
-            limit_stock,
-            inventory_type,
-            inventory_description
-        } = request.body;
-
-        if (category_id && name && price && stock && limit_stock) {
-            try {
-                // Get pool connection
-                var connection = await PoolConnection.getConnection();
-                await connection.beginTransaction();
-
-                // Add product
-                var queryProduct = await ProductModel.setProduct(connection, category_id, name, product_type, product_description, supplier, price);
-                if (!queryProduct.success) throw queryProduct.response;
-                var rowsProduct = queryProduct.response;
-
-                // Set inventoey
-                var queryInventory = await InventoryModel.setInventory(connection, rowsProduct[0].product_id, stock, limit_stock, inventory_type, inventory_description);
-                if (!queryInventory.success) throw queryInventory.response;
-
-                await connection.commit();
-                await connection.release();
-
-                data = { 
-                    'product_id': rowsProduct[0].product_id,
-                    'name': name
-                }
-                Response.ok("add product success", data, response);
-            } catch (ex) {
-                //console.log(ex)
-                await connection.rollback();
-                await connection.release();
-                console.log("rollback success")
-                next(ex);
-            }
-        } else {
-            next(new Error('ITEM02'));
         }
     },
 };

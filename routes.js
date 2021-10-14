@@ -4,7 +4,9 @@ module.exports = function (router) {
     const Person = require('./app/controller/person');
     const Item = require('./app/controller/item');
     const Invoice = require('./app/controller/invoice'); 
+    const Payment = require('./app/controller/payment'); 
     const Report = require('./app/controller/report'); 
+    const COA = require('./app/controller/coa'); 
 
     // index
     router.get('/', Index.index);
@@ -26,12 +28,18 @@ module.exports = function (router) {
     router.put('/items/inventory/update', Item.updateStock);
     router.get('/items/categories/getall', Item.getAllCategories);
 
+    // code of account
+    router.get('/coa/getall', COA.getAllCOA);
+
     // sale transaction
     router.get('/invoice/get', Invoice.getOrder);
     router.get('/invoice/getall', Invoice.getAllOrders);
     router.post('/invoice/add', Invoice.addOrder);
 
     // bill transaction
+    // payment
+    router.post('/payment/add', Payment.addPayment);
+    router.get('/payment/get', Payment.getPayment);
 
     // report
     router.get('/report/products/getall', Report.getAllProductsReport);

@@ -42,4 +42,17 @@ module.exports = {
             };
         }
     },
+    updateOrder: async function (connection, condition, value, order_id) {
+        try {
+            await connection.query(`UPDATE orders SET ${condition} = ? WHERE id = ?`, [value, order_id]);
+            return {
+                success: true
+            };
+        } catch (ex) {
+            return {
+                success: false,
+                response: ex
+            }
+        }
+    },
 };
