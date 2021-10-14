@@ -30,6 +30,7 @@ module.exports = function (router) {
 
     // code of account
     router.get('/coa/getall', COA.getAllCOA);
+    router.get('/coa/get', COA.getCOAByCategory);
 
     // sale transaction
     router.get('/invoice/get', Invoice.getOrder);

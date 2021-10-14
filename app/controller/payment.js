@@ -42,7 +42,7 @@ module.exports = {
                     default: throw new Error('PAY02');
                 }
     
-                Response.ok("get transaction success", rowsTransc, response);
+                Response.ok("get payment success", rowsTransc, response);
             } catch (ex) {
                 //console.log(ex)
                 next(ex);

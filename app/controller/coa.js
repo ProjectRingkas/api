@@ -26,4 +26,33 @@ module.exports = {
             next(ex);
         }
     },
+    getCOAByCategory: async function (request, response, next) {
+        var {
+            saldo_category
+        } = request.query;
+        if (!saldo_category) {
+            var {
+                saldo_category
+            } = request.body;
+        }
+
+        if (saldo_category) {
+            try {
+                // Get pool connection
+                var connection = await PoolConnection.get();
+    
+               // Get all customers
+                var queryCOA = await COAModel.getCOA(connection, 'saldo_category', saldo_category);
+                if (!queryCOA.success) throw queryCOA.response;
+                var rowsCOA = queryCOA.response;
+    
+                Response.ok("get code of account success", rowsCOA, response);
+            } catch (ex) {
+                //console.log(ex)
+                next(ex);
+            }
+        } else {
+            next(new Error('COA01'));
+        }
+    },
 };
