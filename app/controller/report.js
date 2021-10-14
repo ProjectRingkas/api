@@ -27,7 +27,7 @@ module.exports = {
                     data.total_products_sold = row.name;
                     data.total_products_orders = row.orders;
                     data.total_unit_products_sold = row.total_sold;
-                    data.total_all_products_income = row.total_income;
+                    data.total_all_products_income = (Math.round(row.total_income * 100) / 100).toFixed(2);
                 } else {
                     arrayProducts.push(row);
                 }
