@@ -55,4 +55,32 @@ module.exports = {
             }
         }
     },
+    getAllPaymentsReport: async function (connection) {
+        try {
+            var [rowsPayment, ] = await connection.query(`SELECT * FROM view_payments_report`);
+            return {
+                success: true,
+                response: rowsPayment
+            };
+        } catch (ex) {
+            return {
+                success: false,
+                response: ex
+            }
+        }
+    },
+    getFilteredPaymentsReport: async function (connection, condition, value) {
+        try {
+            var [rowsPayment, ] = await connection.query(`SELECT * FROM view_payments_report ${condition}`, value);
+            return {
+                success: true,
+                response: rowsPayment
+            };
+        } catch (ex) {
+            return {
+                success: false,
+                response: ex
+            }
+        }
+    },
 };

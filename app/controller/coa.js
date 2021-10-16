@@ -42,7 +42,7 @@ module.exports = {
                 var connection = await PoolConnection.get();
     
                // Get all customers
-                var queryCOA = await COAModel.getCOA(connection, 'saldo_category', saldo_category);
+                var queryCOA = await COAModel.getCOA(connection, 'saldo_category', saldo_category.toUpperCase());
                 if (!queryCOA.success) throw queryCOA.response;
                 var rowsCOA = queryCOA.response;
     
