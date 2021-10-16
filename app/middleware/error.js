@@ -15,6 +15,7 @@ const errorCode = {
     'PAY01': 'please complete payment registration form',
     'PAY02': 'invalid payment type',
     'PAY03': 'payment not found',
+    'PAY04': 'invalid payment report category',
     'COA01': 'code of account not found',
 };
 module.exports = {

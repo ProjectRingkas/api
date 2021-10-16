@@ -44,4 +44,6 @@ module.exports = function (router) {
 
     // report
     router.get('/report/products/getall', Report.getAllProductsReport);
+    router.get('/report/payments/getall', Report.getAllPaymentsReport);
+    router.get('/report/payments/filter', Report.getFilteredPaymentsReport);
 }

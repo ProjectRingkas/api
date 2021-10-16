@@ -73,13 +73,24 @@ module.exports = {
                 if (!queryPay.success) throw queryPay.response;
 
                 // Check invoice type and update them
+                var unkownError = true;
                 switch (type) {
                     case "orders":
                         // Get total price of order
                         var queryOrder = await OrdersModel.getOrder(connection, 'id', type_id);
                         if (!queryOrder.success) throw queryOrder.response;
-                        if (queryOrder.response.length < 1) throw Response.no("invoice not found", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                        if (queryOrder.response.length < 1) {
+                            unkownError = false;
+                            throw Response.no("invoice not found", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                        };    
                         var rowsOrder = queryOrder.response;
+
+                        // Check if status is fully paid
+                        if (rowsOrder[0].status == "Fully Paid")
+                        {
+                            unkownError = false;
+                            throw Response.no("this incoice already fully paid", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                        }
 
                         // get all payment from the invoice
                         var queryTransc = await TransactionModel.getTransaction(connection, 'orders', type_id);
@@ -131,7 +142,9 @@ module.exports = {
                 await connection.rollback();
                 await connection.release();
                 console.log("rollback success")
-                next(ex);
+                if (unkownError) {
+                    next(ex);
+                }
             }
         } else {
             next(new Error('PAY01'));

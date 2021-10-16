@@ -129,14 +129,17 @@ module.exports = {
 
                 // Set Order Items
                 var total_order_price = 0;
+                var unkownError = true;
                 await asyncForEach(arrayItems, async function (item) {
                     // Check Item stock
                     var queryInven = await InventoryModel.getInventory(connection, 'product_id', item.product_id);
                     if (!queryInven.success) throw queryInven.response;
                     var rowsInven = queryInven.response;
                     if (rowsInven[0].stock < 1) {
+                        unkownError = false;
                         throw Response.no("product out of stock", { 'product_id': item.product_id  }, response);
                     } else if (rowsInven[0].stock < item.quantity) {
+                        unkownError = false;
                         throw Response.no("product not enough stock for order", { 'product_id': item.product_id  }, response);
                     }
 
@@ -172,7 +175,9 @@ module.exports = {
                 await connection.rollback();
                 await connection.release();
                 console.log("rollback success")
-                next(ex);
+                if (unkownError) {
+                    next(ex);
+                }
             }
         } else {
             next(new Error('INVC02'));
