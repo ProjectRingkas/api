@@ -4,6 +4,7 @@ module.exports = function (router) {
     const Person = require('./app/controller/person');
     const Item = require('./app/controller/item');
     const Invoice = require('./app/controller/invoice'); 
+    const Bill = require('./app/controller/bill'); 
     const Payment = require('./app/controller/payment'); 
     const Report = require('./app/controller/report'); 
     const COA = require('./app/controller/coa'); 
@@ -38,6 +39,10 @@ module.exports = function (router) {
     router.post('/invoice/add', Invoice.addOrder);
 
     // bill transaction
+    router.get('/bill/get', Bill.getBill);
+    router.get('/bill/getall', Bill.getAllBills);
+    router.post('/bill/add', Bill.addBill);
+
     // payment
     router.post('/payment/add', Payment.addPayment);
     router.get('/payment/get', Payment.getPayment);

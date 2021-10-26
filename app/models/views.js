@@ -55,6 +55,20 @@ module.exports = {
             }
         }
     },
+    getBillItems: async function (connection, condition, value) {
+        try {
+            var [rowsBill, ] = await connection.query(`SELECT * FROM view_detail_bill_items WHERE ${condition} = ?`, [value]);
+            return {
+                success: true,
+                response: rowsBill
+            };
+        } catch (ex) {
+            return {
+                success: false,
+                response: ex
+            }
+        }
+    },
     getAllPaymentsReport: async function (connection) {
         try {
             var [rowsPayment, ] = await connection.query(`SELECT * FROM view_payments_report`);
