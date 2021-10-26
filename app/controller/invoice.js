@@ -84,7 +84,7 @@ module.exports = {
                 order.order_items = rowsOrderItems;
 
                 // If there is payment for the order
-                var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order_id);
+                var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order.id);
                 if (!queryTransc.success) throw queryTransc.response;
                 var rowsTransc = queryTransc.response;
                 if (rowsTransc.length > 1)
