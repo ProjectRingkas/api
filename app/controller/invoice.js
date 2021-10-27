@@ -1,5 +1,6 @@
 const PoolConnection = require('../config/pool');
 const Response = require('../middleware/res');
+const CustomersModel = require('../models/customers')
 const OrdersModel = require('../models/orders')
 const OrderItemsModel = require('../models/orderItems')
 const InventoryModel = require('../models/inventory')
@@ -34,6 +35,14 @@ module.exports = {
                 if (!queryOrder.success) throw queryOrder.response;
                 if (queryOrder.response.length <= 0) throw new Error('INVC01');
                 var rowsOrder = queryOrder.response;
+
+                // Get Customer
+                var queryCustomer = await CustomersModel.getCustomer(connection, 'id', rowsOrder[0].customer_id);
+                if (!queryCustomer.success) throw queryCustomer.response;
+                var rowCustomer = queryCustomer.response;
+
+                // Merge customer to order
+                rowsOrder[0].customer = rowCustomer;
 
                 // Get Order Item
                 var queryOrderItems = await ViewsModel.getOrderItems(connection, 'order_id', order_id);
@@ -75,6 +84,14 @@ module.exports = {
             var arrayOrders = [];
 
             await asyncForEach(rowsOrder, async function (order) {
+                // Get Customer
+                var queryCustomer = await CustomersModel.getCustomer(connection, 'id', order.customer_id);
+                if (!queryCustomer.success) throw queryCustomer.response;
+                var rowCustomer = queryCustomer.response;
+
+                // Merge customer to order
+                order.customer = rowCustomer;
+
                 // Get Order Item
                 var queryOrderItems = await ViewsModel.getOrderItems(connection, 'order_id', order.id);
                 if (!queryOrderItems.success) throw queryOrderItems.response;
@@ -144,14 +161,14 @@ module.exports = {
                     }
 
                     // Set item to order
-                    var queryOrderItems = await OrderItemsModel.setOrderItem(connection, rowsOrder[0].order_id, item.product_id, item.transaction_price, item.quantity, item.discount);
+                    var queryOrderItems = await OrderItemsModel.setOrderItem(connection, rowsOrder[0].order_id, item.product_id, item.price, item.quantity, item.discount);
                     if (!queryOrderItems.success) throw queryOrderItems.response;
 
                     // Update stock
                     var queryInven = await InventoryModel.updateInventory(connection, item.product_id, (Number(rowsInven[0].stock) - Number(item.quantity)), rowsInven[0].type, rowsInven[0].description);
                     if (!queryInven.success) throw queryInven.response;
 
-                    total_item_price = (Number(item.transaction_price) * Number(item.quantity)) * (100 - Number(item.discount)) / 100;
+                    total_item_price = (Number(item.price) * Number(item.quantity)) * (100 - Number(item.discount)) / 100;
                     total_order_price += total_item_price;
                 });
 
