@@ -27,9 +27,9 @@ module.exports = {
             }
         }
     },
-    setOrder: async function (connection, customer_id, description, date, status) {
+    setOrder: async function (connection, invoice_number, order_number, customer_id, description, date, due, status) {
         try {
-            await connection.query('INSERT INTO orders (customer_id, description, date, status) VALUES (?, ?, ?, ?)', [customer_id, description, date, status]);
+            await connection.query('INSERT INTO orders (invoice_number, order_number, customer_id, description, date, due, status) VALUES (?, ?, ?, ?, ?, ?, ?)', [invoice_number, order_number, customer_id, description, date, due, status]);
             var [rowsOrder] = await connection.execute('SELECT LAST_INSERT_ID() as order_id');
             return {
                 success: true,

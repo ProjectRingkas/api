@@ -17,17 +17,17 @@ module.exports = {
     },
     no: function (msg, values, res) {
         var data = {
-            'status': 404,
+            'status': 400,
             'message': msg,
             'data': values
         };
         if (!values) {
             var data = {
-                'status': 404,
+                'status': 400,
                 'message': msg
             };
         }
-        res.status(404);
+        res.status(400);
         res.json(data);
         res.end();
     }

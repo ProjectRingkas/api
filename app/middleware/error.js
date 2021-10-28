@@ -47,8 +47,8 @@ module.exports = {
                 message: errorCode[errorCodeFiltered[0]]
             });
         } else {
-            res.status(404).json({
-                status: 404,
+            res.status(400).json({
+                status: 400,
                 message: errorCode[errorCodeFiltered[0]]
             });
         }

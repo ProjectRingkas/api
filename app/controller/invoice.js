@@ -124,12 +124,15 @@ module.exports = {
     addOrder: async function (request, response, next) {
         const {
             customer_id,
+            invoice_number,
+            order_number,
             date, 
+            due,
             items,
             description
         } = request.body;
 
-        if (customer_id && date && items) {
+        if (invoice_number && order_number && customer_id && date && due && items) {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.getConnection();
@@ -137,7 +140,7 @@ module.exports = {
 
                 // Add Order
                 var status = "Pending"
-                var queryOrder = await OrdersModel.setOrder(connection, customer_id, description, date, status);
+                var queryOrder = await OrdersModel.setOrder(connection, invoice_number, order_number, customer_id, description, date, due, status);
                 if (!queryOrder.success) throw queryOrder.response;
                 var rowsOrder = queryOrder.response;
 
