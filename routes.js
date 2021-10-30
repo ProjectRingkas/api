@@ -25,6 +25,7 @@ module.exports = function (router) {
     // items
     router.get('/items/get', Item.getProduct);
     router.get('/items/getall', Item.getAllProducts);
+    router.get('/items/type', Item.getAllProductsByType);
     router.post('/items/add', Item.addProduct);
     router.put('/items/inventory/update', Item.updateStock);
     router.get('/items/categories/getall', Item.getAllCategories);

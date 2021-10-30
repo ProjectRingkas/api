@@ -52,6 +52,35 @@ module.exports = {
             next(ex);
         }
     },
+    getAllProductsByType: async function (request, response, next) {
+        var {
+            type
+        } = request.query;
+        if (!type) {
+            var {
+                type
+            } = request.body;
+        }
+
+        if (type) {
+            try {
+                // Get pool connection
+                var connection = await PoolConnection.get();
+    
+                // Get all products by type
+                var queryProduct = await ProductModel.getProduct(connection, 'type', type);
+                if (!queryProduct.success) throw queryProduct.response;
+                var rowsProducts = queryProduct.response;
+    
+                Response.ok("get all products success", rowsProducts, response);
+            } catch (ex) {
+                //console.log(ex)
+                next(ex);
+            }
+        } else {
+            next(new Error('ITEM01'));
+        }
+    },
     getAllCategories: async function (request, response, next) {
         try {
             // Get pool connection
