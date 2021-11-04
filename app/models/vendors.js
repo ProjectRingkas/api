@@ -1,7 +1,7 @@
 module.exports = {
     getVendor: async function (connection, condition, value) {
         try {
-            var [rowsVendor, ] = await connection.query(`SELECT * FROM vendor WHERE ${condition} = ?`, [value]);
+            var [rowsVendor, ] = await connection.query(`SELECT * FROM vendors WHERE ${condition} = ?`, [value]);
             return {
                 success: true,
                 response: rowsVendor

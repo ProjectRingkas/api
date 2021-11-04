@@ -4,6 +4,7 @@ const BillsModel = require('../models/bills')
 const BillItemsModel = require('../models/billItems')
 const ViewsModel = require('../models/views')
 const TransactionModel = require('../models/transaction');
+const VendorsModel = require('../models/vendors')
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -33,6 +34,14 @@ module.exports = {
                 if (!queryBill.success) throw queryBill.response;
                 if (queryBill.response.length <= 0) throw new Error('BILL01');
                 var rowsBill = queryBill.response;
+
+                // Get vendor
+                var queryVendor = await VendorsModel.getVendor(connection, 'id', rowsBill[0].vendor_id);
+                if (!queryVendor.success) throw queryVendor.response;
+                var rowsVendor = queryVendor.response;
+
+                // Merge customer to order
+                rowsBill[0].vendor = rowsVendor;
 
                 // Get bill Item
                 var queryBillItem = await ViewsModel.getBillItems(connection, 'bill_id', bill_id);
@@ -70,10 +79,18 @@ module.exports = {
             var queryBill = await BillsModel.getAllBills(connection);
             if (!queryBill.success) throw queryBill.response;
             var rowsBill = queryBill.response;
-
+            
             var arrayBills = [];
 
             await asyncForEach(rowsBill, async function (bill) {
+                // Get vendor
+                var queryVendor = await VendorsModel.getVendor(connection, 'id', bill.vendor_id);
+                if (!queryVendor.success) throw queryVendor.response;
+                var rowsVendor = queryVendor.response;
+
+                // Merge customer to order
+                bill.vendor = rowsVendor;
+
                 // Get bill Item
                 var queryBillItem = await ViewsModel.getBillItems(connection, 'bill_id', bill.id);
                 if (!queryBillItem.success) throw queryBillItem.response;
@@ -116,7 +133,7 @@ module.exports = {
             discount
         } = request.body;
 
-        if (!(vendor_id && date && periodic && product_id && transaction_price && transaction_price && discount)) {
+        if (!(vendor_id && date && periodic && product_id && transaction_price && quantity && discount)) {
             next(new Error('BILL02'));
         } else if (!(periodic == "month" || periodic == "year")) {
             next(new Error('BILL03'));

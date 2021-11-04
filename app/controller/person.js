@@ -1,7 +1,7 @@
 const PoolConnection = require('../config/pool');
 const Response = require('../middleware/res');
 const CustomersModel = require('../models/customers')
-const VenorsModel = require('../models/vendors')
+const VendorsModel = require('../models/vendors')
 
 module.exports = {
     getAllCustomers: async function (request, response, next) {
@@ -26,7 +26,7 @@ module.exports = {
             var connection = await PoolConnection.get();
 
             // Get all vendors
-            var queryVendors = await VenorsModel.getAllVendors(connection);
+            var queryVendors = await VendorsModel.getAllVendors(connection);
             if (!queryVendors.success) throw queryVendors.response;
             var rowsVendors = queryVendors.response; 
 
@@ -82,7 +82,7 @@ module.exports = {
                 var connection = await PoolConnection.get();
 
                 // Addvendor
-                var queryVendors = await VenorsModel.setVendor(connection, name, address, phone, description);
+                var queryVendors = await VendorsModel.setVendor(connection, name, address, phone, description);
                 if (!queryVendors.success) throw queryVendors.response;
 
                 data = { 
