@@ -3,11 +3,11 @@ module.exports = function (router) {
     const Auth = require('./app/controller/authentication');
     const Person = require('./app/controller/person');
     const Item = require('./app/controller/item');
-    const Invoice = require('./app/controller/invoice'); 
-    const Bill = require('./app/controller/bill'); 
-    const Payment = require('./app/controller/payment'); 
-    const Report = require('./app/controller/report'); 
-    const COA = require('./app/controller/coa'); 
+    const Invoice = require('./app/controller/invoice');
+    const Bill = require('./app/controller/bill');
+    const Payment = require('./app/controller/payment');
+    const Report = require('./app/controller/report');
+    const COA = require('./app/controller/coa');
 
     // index
     router.get('/', Index.index);
@@ -32,7 +32,7 @@ module.exports = function (router) {
 
     // code of account
     router.get('/coa/getall', COA.getAllCOA);
-    router.get('/coa/get', COA.getCOAByCategory);
+    router.get('/coa/getByCategory', COA.getCOAByCategory);
 
     // sale transaction
     router.get('/invoice/get', Invoice.getOrder);

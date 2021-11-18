@@ -28,24 +28,26 @@ module.exports = {
     },
     getCOAByCategory: async function (request, response, next) {
         var {
-            saldo_category
+            type,
+            value
         } = request.query;
-        if (!saldo_category) {
+        if (!type) {
             var {
-                saldo_category
+                type,
+                value
             } = request.body;
         }
 
-        if (saldo_category) {
+        if (value) {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.get();
-    
-               // Get all customers
-                var queryCOA = await COAModel.getCOA(connection, 'saldo_category', saldo_category.toUpperCase());
+
+                // Get all customers
+                var queryCOA = await COAModel.getCOA(connection, type, value.toUpperCase());
                 if (!queryCOA.success) throw queryCOA.response;
                 var rowsCOA = queryCOA.response;
-    
+
                 Response.ok("get code of account success", rowsCOA, response);
             } catch (ex) {
                 //console.log(ex)

@@ -28,7 +28,7 @@ module.exports = {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.get();
-    
+
                 switch (type) {
                     case "orders":
                         // get all payment from the invoice
@@ -46,9 +46,10 @@ module.exports = {
                         var rowsTransc = queryTransc.response;
 
                         break;
-                    default: throw new Error('PAY02');
+                    default:
+                        throw new Error('PAY02');
                 }
-    
+
                 Response.ok("get payment success", rowsTransc, response);
             } catch (ex) {
                 //console.log(ex)
@@ -68,12 +69,14 @@ module.exports = {
             amount,
             description,
         } = request.body;
-
+        //console.log(request.body)
         if (date && type && type_id && coa_credit_id && coa_debit_id && amount) {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.getConnection();
                 await connection.beginTransaction();
+
+                //console.log('post', date && type && type_id && coa_credit_id && coa_debit_id && amount, request.body)
 
                 // Check invoice type and update them
                 var unkownError = true;
@@ -84,15 +87,20 @@ module.exports = {
                         if (!queryOrder.success) throw queryOrder.response;
                         if (queryOrder.response.length < 1) {
                             unkownError = false;
-                            throw Response.no("invoice not found", { 'invoice_type': type, 'invoice_id': type_id  }, response);
-                        };    
+                            throw Response.no("invoice not found", {
+                                'invoice_type': type,
+                                'invoice_id': type_id
+                            }, response);
+                        };
                         var rowsOrder = queryOrder.response;
 
                         // Check if status is fully paid
-                        if (rowsOrder[0].status == "Fully Paid")
-                        {
+                        if (rowsOrder[0].status == "Fully Paid") {
                             unkownError = false;
-                            throw Response.no("this incoice already fully paid", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                            throw Response.no("this incoice already fully paid", {
+                                'invoice_type': type,
+                                'invoice_id': type_id
+                            }, response);
                         }
 
                         // Create payment
@@ -110,13 +118,13 @@ module.exports = {
                             debt -= Number(transc.amount);
                         });
 
+
                         // round debt to 2 decimal
                         debt = (Math.round(debt * 100) / 100).toFixed(2);
 
                         // Check if payment complete
                         var status = "Partially Paid";
-                        if (debt <= 0)
-                        {
+                        if (debt <= 0) {
                             debt = '-';
                             status = "Fully Paid";
                         }
@@ -125,7 +133,7 @@ module.exports = {
                         var queryOrder = await OrdersModel.updateOrder(connection, 'status', status, type_id);
                         if (!queryOrder.success) throw queryOrder.response;
 
-                        var data = { 
+                        var data = {
                             'invoice_type': type,
                             'invoice_id': type_id,
                             'invoice_price': rowsOrder[0].total_price,
@@ -142,7 +150,10 @@ module.exports = {
                         if (!queryBill.success) throw queryBill.response;
                         if (queryBill.response.length < 1) {
                             unkownError = false;
-                            throw Response.no("bill not found", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                            throw Response.no("bill not found", {
+                                'invoice_type': type,
+                                'invoice_id': type_id
+                            }, response);
                         };
                         var rowsBill = queryBill.response;
 
@@ -152,10 +163,12 @@ module.exports = {
                         var rowsBillItem = queryBillItem.response;
 
                         // Check if status is fully paid
-                        if (rowsBill[0].status == "Fully Paid")
-                        {
+                        if (rowsBill[0].status == "Fully Paid") {
                             unkownError = false;
-                            throw Response.no("this invoice already fully paid", { 'invoice_type': type, 'invoice_id': type_id  }, response);
+                            throw Response.no("this invoice already fully paid", {
+                                'invoice_type': type,
+                                'invoice_id': type_id
+                            }, response);
                         }
 
                         // Create payment
@@ -178,8 +191,7 @@ module.exports = {
 
                         // Check if payment complete
                         var status = "Partially Paid";
-                        if (debt <= 0)
-                        {
+                        if (debt <= 0) {
                             debt = '-';
                             status = "Fully Paid";
                         }
@@ -188,7 +200,7 @@ module.exports = {
                         var queryBill = await BillsModel.updateBill(connection, 'status', status, type_id);
                         if (!queryBill.success) throw queryBill.response;
 
-                        var data = { 
+                        var data = {
                             'invoice_type': type,
                             'invoice_id': type_id,
                             'invoice_price': rowsBillItem[0].transaction_price,
@@ -199,12 +211,13 @@ module.exports = {
 
                         break;
 
-                    default: throw new Error('PAY02');
+                    default:
+                        throw new Error('PAY02');
                 }
 
                 await connection.commit();
                 await connection.release();
-                
+
                 Response.ok("create payment success", data, response);
             } catch (ex) {
                 //console.log(ex)

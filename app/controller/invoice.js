@@ -29,7 +29,7 @@ module.exports = {
             try {
                 // Get pool connection
                 var connection = await PoolConnection.get();
-    
+
                 // Get Order
                 var queryOrder = await OrdersModel.getOrder(connection, 'id', order_id);
                 if (!queryOrder.success) throw queryOrder.response;
@@ -56,12 +56,11 @@ module.exports = {
                 var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order_id);
                 if (!queryTransc.success) throw queryTransc.response;
                 var rowsTransc = queryTransc.response;
-                if (rowsTransc.length > 1)
-                {
+                if (rowsTransc.length > 1) {
                     // Merge payment to order
                     rowsOrder[0].transaction_detail = rowsTransc;
                 }
-    
+
                 Response.ok("get invoice success", rowsOrder, response);
             } catch (ex) {
                 //console.log(ex)
@@ -72,6 +71,7 @@ module.exports = {
         }
     },
     getAllOrders: async function (request, response, next) {
+
         try {
             // Get pool connection
             var connection = await PoolConnection.get();
@@ -104,8 +104,7 @@ module.exports = {
                 var queryTransc = await TransactionModel.getTransaction(connection, 'orders', order.id);
                 if (!queryTransc.success) throw queryTransc.response;
                 var rowsTransc = queryTransc.response;
-                if (rowsTransc.length > 1)
-                {
+                if (rowsTransc.length > 1) {
                     // Merge payment to order
                     order.transaction_detail = rowsTransc;
                 }
@@ -114,7 +113,7 @@ module.exports = {
                     order
                 });
             });
-            
+
             Response.ok("get all invoice success", arrayOrders, response);
         } catch (ex) {
             //console.log(ex)
@@ -126,7 +125,7 @@ module.exports = {
             customer_id,
             invoice_number,
             order_number,
-            date, 
+            date,
             due,
             items,
             description
@@ -157,10 +156,14 @@ module.exports = {
                     var rowsInven = queryInven.response;
                     if (rowsInven[0].stock < 1) {
                         unkownError = false;
-                        throw Response.no("product out of stock", { 'product_id': item.product_id  }, response);
+                        throw Response.no("product out of stock", {
+                            'product_id': item.product_id
+                        }, response);
                     } else if (rowsInven[0].stock < item.quantity) {
                         unkownError = false;
-                        throw Response.no("product not enough stock for order", { 'product_id': item.product_id  }, response);
+                        throw Response.no("product not enough stock for order", {
+                            'product_id': item.product_id
+                        }, response);
                     }
 
                     // Set item to order
@@ -185,7 +188,7 @@ module.exports = {
                 await connection.commit();
                 await connection.release();
 
-                data = { 
+                data = {
                     'order_id': rowsOrder[0].order_id,
                     'total_order_price': total_order_price
                 }
